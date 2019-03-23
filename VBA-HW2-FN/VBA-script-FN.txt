@@ -1,0 +1,103 @@
+Sub stockmarket1()
+
+  Dim WS As Worksheet
+    For Each WS In ActiveWorkbook.Worksheets
+    WS.Activate
+          ' Determine the Last Row
+          LastRow = WS.Cells(Rows.Count, 1).End(xlUp).Row
+    
+          ' Set an initial variable for holding the ticker name
+          Dim ticker_name As String
+        
+          ' Set an initial variable for holding the total per ticker
+          Dim volume_total As Double
+          volume_total = 0
+          
+          'set initial variable for holding the yearly change per ticker
+          Dim yearly_change As Double
+          yearly_change = 0
+          
+          'set initial variable for holding the percent change per ticker
+          Dim percent_change As Double
+          percent_change = 0
+        
+          ' Keep track of the location for each credit card brand in the summary table
+          Dim Summary_Table_Row As Integer
+          Summary_Table_Row = 2
+          
+          'set headings
+          Range("I1").Value = "Ticker"
+          Range("J1").Value = "Yearly Change"
+          Range("K1").Value = "Percent Change"
+          Range("L1").Value = "Total Stock Volume"
+          
+          Columns("I:L").AutoFit
+        
+          Dim first As Double
+          first = Cells(2, 6).Value
+          Dim last As Double
+
+
+          ' Loop through all ticker volumes
+          For i = 2 To 80000
+        
+          ' Check if we are still within the same ticker, if it is not...
+            If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+        
+          last = Cells(i, 6).Value
+   
+   
+         ' Set the Brand name
+         ticker_name = Cells(i, 1).Value
+    
+         ' Add to the volume Total
+         volume_total = volume_total + Cells(i, 7).Value
+          
+         ' calculate yearly change
+         yearly_change = last - first
+               
+         ' calculate percent change
+         percent_change = (last - first) / first
+                    
+         ' Print the ticker name in the Summary Table
+         Range("I" & Summary_Table_Row).Value = ticker_name
+          
+         ' Print the yearly change to the summary table
+         Range("J" & Summary_Table_Row).Value = yearly_change
+          
+         If yearly_change < 0 Then
+             Range("J" & Summary_Table_Row).Interior.ColorIndex = 3
+         Else
+            Range("J" & Summary_Table_Row).Interior.ColorIndex = 4
+         End If
+          
+         ' Print the percent change to the summary table
+          Range("K" & Summary_Table_Row).Value = percent_change
+          Range("K" & Summary_Table_Row).NumberFormat = "0.00%"
+        
+          
+         ' Print the volume to the Summary Table
+          Range("L" & Summary_Table_Row).Value = volume_total
+      
+         ' Add one to the summary table row
+          Summary_Table_Row = Summary_Table_Row + 1
+          
+         'Reset first
+          first = Cells(i + 1, 6).Value
+          
+         ' Reset the Volume Total
+          volume_total = 0
+    
+         ' If the cell immediately following a row is the same brand...
+        Else
+    
+         ' Add to the Volume total
+          volume_total = volume_total + Cells(i, 7).Value
+    
+        End If
+    
+        Next i
+
+    Next WS
+
+End Sub
